@@ -50,3 +50,33 @@ resource "confluent_ksql_cluster" "ksql_cluster" {
         # Role bindings, api keys
     ]
 }
+
+resource "confluent_connector" "mssql-connector" {
+    environment {
+        id = confluent_environment.env.id
+    }
+    kafka_cluster {
+        id = confluent_kafka_cluster.basic_cluster.id
+    }
+
+    config_sensitive = {
+        "kafka.api.key"         = "TODO"
+        "kafka.api.secret"      = "TODO"
+        "database.hostname"     = "TODO"
+        "database.user"         = "TODO"
+        "database.password"     = "TODO"
+    }
+
+    config_nonsensitive = {
+        "connector.class"       = "SqlServerCdcSource"
+        "name"                  = "SqlServerCdcSourceConnector_${random_id.env_display_id.hex}"
+        "kafka.auth.mode"       = "KAFKA_API_KEY"
+        "database.port"         = "1433"
+        "database.dbname"       = "database-name"
+        "database.server.name"  = "sql"
+        "table.include.list"    = "public.passengers"
+        "snapshot.mode"         = "initial"
+        "output.data.format"    = "JSON"
+        "tasks.max"             = "1"
+    }
+}
