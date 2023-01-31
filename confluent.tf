@@ -79,4 +79,8 @@ resource "confluent_connector" "mssql-connector" {
         "output.data.format"    = "JSON"
         "tasks.max"             = "1"
     }
+
+    lifecycle {
+        prevent_destroy = true
+    }
 }
