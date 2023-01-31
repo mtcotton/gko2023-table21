@@ -33,3 +33,20 @@ resource "confluent_service_account" "streamprocessing_manager" {
     display_name = "streamprocessing-manager-service-account-${random_id.env_display_id.hex}"
     description = "Created by Terraform"
 }
+
+resource "confluent_ksql_cluster" "ksql_cluster" {
+    display_name = "ksql-cluster-${random_id.env_display_id.hex}"
+    csu = 1
+    environment {
+        id = confluent_environment.env.id
+    }
+    kafka_cluster {
+        id = confluent_kafka_cluster.basic_cluster.id
+    }
+    credential_identity {
+        id = confluent_service_account.streamprocessing_manager.id
+    }
+    depends_on = [
+        # Role bindings, api keys
+    ]
+}
